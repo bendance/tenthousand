@@ -28,13 +28,23 @@ public class UserTimer
      */
     public void runTimer()
     {
+        ScreenComponents screenComponents = new ScreenComponents();
+
         if (timerOn)
         {
-            System.out.println("i work too");
             Timer timer = new Timer(1000, new ActionListener() {
                 @Override
-                public void actionPerformed(ActionEvent e) {
-                    System.out.println("hello");
+                public void actionPerformed(ActionEvent e)
+                {
+                    String currentTime = screenComponents.getCurrentSessionTime().getText();
+                    int currentSeconds = Integer.parseInt(currentTime.substring(12, 14));
+                    currentSeconds++;
+
+                    // Set current time to new value
+                    String newTime = String.format("<html>00:00:%02d</html>", currentSeconds);
+
+                    screenComponents.getCurrentSessionTime().setText(newTime);
+                    System.out.println(currentSeconds);
                 }
             });
             timer.start();

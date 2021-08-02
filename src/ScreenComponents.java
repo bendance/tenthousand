@@ -12,6 +12,7 @@ public class ScreenComponents extends JPanel
     private JPanel inputPanel = new JPanel();
     private JPanel timePanel = new JPanel();
     private UserTimer userTimer = new UserTimer();
+    private JLabel currentSessionTime;
 
     public ScreenComponents()
     {
@@ -30,6 +31,16 @@ public class ScreenComponents extends JPanel
         add(timePanel, BorderLayout.LINE_END);
     }
 
+    public JLabel getCurrentSessionTime()
+    {
+        return currentSessionTime;
+    }
+
+    public void setCurrentSessionTime(JLabel currentSessionTime)
+    {
+        this.currentSessionTime = currentSessionTime;
+    }
+
     private void firstScreenComponents()
     {
         // The first half of the screen
@@ -45,7 +56,7 @@ public class ScreenComponents extends JPanel
         currentSession.setText("<html>CURRENT SESSION:</html>");
         inputPanel.add(currentSession);
 
-        JLabel currentSessionTime = new JLabel();
+        currentSessionTime = new JLabel();
         currentSessionTime.setFont(new Font("Calibri", Font.PLAIN, 20));
         currentSessionTime.setSize(200, 200);
         currentSessionTime.setLocation(100, 25);
@@ -62,7 +73,6 @@ public class ScreenComponents extends JPanel
             // Get the current time from the JLabel
             // Create a timer and update the JLabel every second
             // If stop button is pressed, then update boolean that says stop
-            System.out.println("working");
             userTimer.setTimerOn(true);
             userTimer.runTimer();
             // When the button is pressed save the new text to the JLabel
