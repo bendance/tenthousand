@@ -71,6 +71,21 @@ public class ScreenComponents extends JPanel
         timePanel.setLayout(null);
         timePanel.setPreferredSize(new Dimension(199, 300));
 
+        // JLabels for second half
+        JLabel hours = new JLabel();
+        hours.setText("<html>HOURS:</html>");
+        hours.setFont(new Font("Calibri", Font.BOLD, 25));
+        hours.setSize(200, 200);
+        hours.setLocation(0,-25);
+        hours.setHorizontalAlignment(JLabel.CENTER);
+        timePanel.add(hours);
 
+        JLabel hoursSpent = new JLabel();
+        hoursSpent.setText("<html>10,000 hours</html>");
+        hoursSpent.setFont(new Font("Calibri", Font.PLAIN, 20));
+        hoursSpent.setSize(200,200);
+        hoursSpent.setLocation(0, 25);
+        hoursSpent.setHorizontalAlignment(JLabel.CENTER);
+        timePanel.add(hoursSpent);
     }
 }
