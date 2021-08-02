@@ -2,43 +2,75 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Components for JFrame
+ * Panels for JFrame
  */
 public class ScreenComponents extends JPanel
 {
+    private JPanel inputPanel = new JPanel();
+    private JPanel timePanel = new JPanel();
+
     public ScreenComponents()
     {
-        // The first half of the screen
-        JPanel userInputPanel = new JPanel();
-        userInputPanel.setLayout(null);
+        setLayout(new BorderLayout());
 
-        JButton startButton = new JButton("Start");
-        startButton.setSize(100, 20);
-        userInputPanel.add(startButton);
-
-        JButton l = new JButton("this is label 1");
-        JLabel l1 = new JLabel("this is label 2");
+        firstScreenComponents();
+        secondScreenComponents();
 
         // create a separator
-        JSeparator s = new JSeparator();
-
-        // set layout as vertical
-        s.setOrientation(SwingConstants.VERTICAL);
+        JSeparator s = new JSeparator(SwingConstants.VERTICAL);
 
         setPreferredSize(new Dimension(600, 300));
 
-        add(userInputPanel);
-        add(s);
-        add(l1);
-
-        // set layout
-        setLayout(new GridLayout(1,0));
-
+        add(inputPanel, BorderLayout.LINE_START);
+        add(s, BorderLayout.CENTER);
+        add(timePanel, BorderLayout.LINE_END);
     }
 
-    public void paintComponent(Graphics g)
+    private void firstScreenComponents()
     {
-        g.setColor(Color.black);
-        g.drawString("hello", 50,50);
+        // The first half of the screen
+        inputPanel.setLayout(null);
+        inputPanel.setPreferredSize(new Dimension(400, 300));
+
+        // Buttons for first half of screen
+        JButton startButton = new JButton("Start");
+        startButton.setSize(100, 20);
+        startButton.setLocation(25,200);
+        inputPanel.add(startButton);
+
+        JButton stopButton = new JButton("Stop");
+        stopButton.setSize(100, 20);
+        stopButton.setLocation(150,200);
+        inputPanel.add(stopButton);
+
+        JButton resetButton = new JButton("Reset");
+        resetButton.setSize(100, 20);
+        resetButton.setLocation(275,200);
+        inputPanel.add(resetButton);
+
+        // JLabels for first half of screen
+        JLabel currentSession = new JLabel();
+        currentSession.setFont(new Font("Calibri", Font.BOLD, 25));
+        currentSession.setSize(200, 200);
+        currentSession.setLocation(100, -25);
+        currentSession.setHorizontalAlignment(JLabel.CENTER);
+        currentSession.setText("<html>CURRENT SESSION:</html>");
+        inputPanel.add(currentSession);
+
+        JLabel currentSessionTime = new JLabel();
+        currentSessionTime.setFont(new Font("Calibri", Font.PLAIN, 20));
+        currentSessionTime.setSize(200, 200);
+        currentSessionTime.setLocation(100, 25);
+        currentSessionTime.setHorizontalAlignment(JLabel.CENTER);
+        currentSessionTime.setText("<html>00:00:00</html>");
+        inputPanel.add(currentSessionTime);
+    }
+
+    private void secondScreenComponents()
+    {
+        timePanel.setLayout(null);
+        timePanel.setPreferredSize(new Dimension(199, 300));
+
+
     }
 }
