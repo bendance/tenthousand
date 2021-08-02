@@ -1,5 +1,8 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Timer;
 
 /**
  * Panels for JFrame
@@ -8,6 +11,7 @@ public class ScreenComponents extends JPanel
 {
     private JPanel inputPanel = new JPanel();
     private JPanel timePanel = new JPanel();
+    private UserTimer userTimer = new UserTimer();
 
     public ScreenComponents()
     {
@@ -32,22 +36,6 @@ public class ScreenComponents extends JPanel
         inputPanel.setLayout(null);
         inputPanel.setPreferredSize(new Dimension(400, 300));
 
-        // Buttons for first half of screen
-        JButton startButton = new JButton("Start");
-        startButton.setSize(100, 20);
-        startButton.setLocation(25,200);
-        inputPanel.add(startButton);
-
-        JButton stopButton = new JButton("Stop");
-        stopButton.setSize(100, 20);
-        stopButton.setLocation(150,200);
-        inputPanel.add(stopButton);
-
-        JButton resetButton = new JButton("Reset");
-        resetButton.setSize(100, 20);
-        resetButton.setLocation(275,200);
-        inputPanel.add(resetButton);
-
         // JLabels for first half of screen
         JLabel currentSession = new JLabel();
         currentSession.setFont(new Font("Calibri", Font.BOLD, 25));
@@ -64,6 +52,32 @@ public class ScreenComponents extends JPanel
         currentSessionTime.setHorizontalAlignment(JLabel.CENTER);
         currentSessionTime.setText("<html>00:00:00</html>");
         inputPanel.add(currentSessionTime);
+
+        // Buttons for first half of screen
+        JButton startButton = new JButton("Start");
+        startButton.setSize(100, 20);
+        startButton.setLocation(25,200);
+        startButton.addActionListener(e ->
+        {
+            // Get the current time from the JLabel
+            // Create a timer and update the JLabel every second
+            // If stop button is pressed, then update boolean that says stop
+            System.out.println("working");
+            userTimer.setTimerOn(true);
+            userTimer.runTimer();
+            // When the button is pressed save the new text to the JLabel
+        });
+        inputPanel.add(startButton);
+
+        JButton stopButton = new JButton("Stop");
+        stopButton.setSize(100, 20);
+        stopButton.setLocation(150,200);
+        inputPanel.add(stopButton);
+
+        JButton resetButton = new JButton("Reset");
+        resetButton.setSize(100, 20);
+        resetButton.setLocation(275,200);
+        inputPanel.add(resetButton);
     }
 
     private void secondScreenComponents()
