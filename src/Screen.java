@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.io.FileNotFoundException;
 
 /**
  * Used to display JFrame for user
@@ -8,7 +9,7 @@ public class Screen
     /**
      * Displays a JFrame on the user's screen
      */
-    public static void JFrame()
+    public static void JFrame() throws FileNotFoundException
     {
         JFrame frame = new JFrame();
         frame.setTitle("Ten Thousand Hours");
@@ -23,7 +24,7 @@ public class Screen
     }
 
     // main method
-    public static void main(String[] args)
+    public static void main(String[] args) throws FileNotFoundException
     {
         // display JFrame here
         JFrame();

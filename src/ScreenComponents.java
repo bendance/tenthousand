@@ -1,21 +1,25 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.util.Scanner;
 
 /**
  * Panels for JFrame
  */
 public class ScreenComponents extends JPanel
 {
-    private JPanel inputPanel = new JPanel();
-    private JPanel timePanel = new JPanel();
+    private final JPanel inputPanel = new JPanel();
+    private final JPanel timePanel = new JPanel();
     private JLabel currentSessionTime;
+    private JLabel totalSessionTime;
     private Timer timer;
 
-    private boolean timerOn;
+    private boolean timerStarted = false;
+    private String totalTimeString;
 
-    public ScreenComponents()
+    public ScreenComponents() throws FileNotFoundException
     {
         setLayout(new BorderLayout());
 
@@ -30,11 +34,6 @@ public class ScreenComponents extends JPanel
         add(inputPanel, BorderLayout.LINE_START);
         add(s, BorderLayout.CENTER);
         add(timePanel, BorderLayout.LINE_END);
-    }
-
-    public JPanel getInputPanel()
-    {
-        return inputPanel;
     }
 
     private void firstScreenComponents()
@@ -67,6 +66,8 @@ public class ScreenComponents extends JPanel
         startButton.addActionListener(e ->
         {
             runTimer();
+            // set the flag on
+            timerStarted = true;
         });
         inputPanel.add(startButton);
 
@@ -76,6 +77,7 @@ public class ScreenComponents extends JPanel
         stopButton.addActionListener(e ->
         {
             timer.stop();
+            timerStarted = false;
         });
         inputPanel.add(stopButton);
 
@@ -90,7 +92,11 @@ public class ScreenComponents extends JPanel
         inputPanel.add(resetButton);
     }
 
-    private void secondScreenComponents()
+    /**
+     * Generates the components for the second half of the screen
+     * @throws FileNotFoundException if hoursspent.txt is not found
+     */
+    private void secondScreenComponents() throws FileNotFoundException
     {
         timePanel.setLayout(null);
         timePanel.setPreferredSize(new Dimension(199, 300));
@@ -104,13 +110,18 @@ public class ScreenComponents extends JPanel
         hours.setHorizontalAlignment(JLabel.CENTER);
         timePanel.add(hours);
 
-        JLabel hoursSpent = new JLabel();
-        hoursSpent.setText("<html>10,000 hours</html>");
-        hoursSpent.setFont(new Font("Calibri", Font.PLAIN, 20));
-        hoursSpent.setSize(200,200);
-        hoursSpent.setLocation(0, 25);
-        hoursSpent.setHorizontalAlignment(JLabel.CENTER);
-        timePanel.add(hoursSpent);
+        totalSessionTime = new JLabel();
+        totalSessionTime.setText("<html>0 hours</html>");
+        totalSessionTime.setFont(new Font("Calibri", Font.PLAIN, 20));
+        totalSessionTime.setSize(200,200);
+        totalSessionTime.setLocation(0, 25);
+        totalSessionTime.setHorizontalAlignment(JLabel.CENTER);
+        timePanel.add(totalSessionTime);
+
+        readNewTime();
+
+        // set appropriate session label at beginning
+        changeTotalSessionLabel();
     }
 
     /**
@@ -118,37 +129,129 @@ public class ScreenComponents extends JPanel
      */
     public void runTimer()
     {
-        ScreenComponents screenComponents = new ScreenComponents();
-
-        timer = new Timer(1000, e ->
+        if (!timerStarted)
         {
-            String currentTime = currentSessionTime.getText();
-            int currentSeconds = Integer.parseInt(currentTime.substring(12, 14));
-            int currentMinutes = Integer.parseInt(currentTime.substring(9, 11));
-            int currentHours = Integer.parseInt(currentTime.substring(6, 8));
-
-            // Increase the seconds
-            currentSeconds++;
-
-            // Reset seconds when seconds equals 60
-            if (currentSeconds == 60)
+            timer = new Timer(1000, e ->
             {
-                currentSeconds = 0;
-                currentMinutes++;
-            }
+                changeCurrentSessionLabel();
+                try
+                {
+                    writeNewTime();
+                }
+                catch (FileNotFoundException fileNotFoundException)
+                {
+                    fileNotFoundException.printStackTrace();
+                }
 
-            // Reset minutes when minutes equals 60
-            if (currentMinutes == 60)
-            {
-                currentMinutes = 0;
-                currentHours++;
-            }
+            });
+            timer.start();
+        }
+    }
 
-            // Set current time to new value
-            String newTime = String.format("<html>%02d:%02d:%02d</html>", currentHours, currentMinutes, currentSeconds);
-            currentSessionTime.setText(newTime);
-            System.out.println(newTime);
-        });
-        timer.start();
+    /**
+     * Changes the JLabel of the current session
+     */
+    public void changeCurrentSessionLabel()
+    {
+        String currentTime = currentSessionTime.getText();
+        currentTime = currentTime.substring(6, currentTime.length() - 7);
+        String[] timeArray = currentTime.split("[:]");
+        int currentSeconds = Integer.parseInt(timeArray[2]);
+        int currentMinutes = Integer.parseInt(timeArray[1]);
+        int currentHours = Integer.parseInt(timeArray[0]);
+
+        // Increase the seconds
+        currentSeconds++;
+
+        // Reset seconds when seconds equals 60
+        if (currentSeconds == 60)
+        {
+            currentSeconds = 0;
+            currentMinutes++;
+        }
+
+        // Reset minutes when minutes equals 60
+        if (currentMinutes == 60)
+        {
+            currentMinutes = 0;
+            currentHours++;
+        }
+
+        // Set current time to new value
+        String newTime = String.format("<html>%02d:%02d:%02d</html>", currentHours, currentMinutes, currentSeconds);
+        currentSessionTime.setText(newTime);
+        changeTotalSessionLabel();
+    }
+
+    /**
+     * Changes the JLabel of the total session
+     */
+    public void changeTotalSessionLabel()
+    {
+        // If the total hours label and current total hours don't match, change it
+        String[] totalTimeArray = totalTimeString.split("[:]");
+        int currentTotalHours = Integer.parseInt(totalTimeArray[0]);
+
+        // Integer value of what is currently displayed in total hours label
+        totalSessionTime.setText(String.format("<html>%d hours</html>", currentTotalHours));
+    }
+
+    /**
+     * Read the total number of hours the user has spent
+     */
+    public void readNewTime() throws FileNotFoundException
+    {
+        Scanner in = new Scanner(new File("src/hoursspent.txt"));
+
+        // flag stating whether or not database has newline
+        boolean hasTime = false;
+
+        while(in.hasNextLine())
+        {
+            hasTime = true;
+            totalTimeString = in.nextLine();
+        }
+
+        if (!hasTime)
+        {
+            totalTimeString = "00:00:00";
+        }
+
+        System.out.println(totalTimeString);
+    }
+
+    /**
+     * Add the past time up to write the new time
+     */
+    public void writeNewTime() throws FileNotFoundException
+    {
+        // Split up total time and current time strings
+        String[] totalTimeArray = totalTimeString.split("[:]");
+        int currentTotalSeconds = Integer.parseInt(totalTimeArray[2]);
+        int currentTotalMinutes = Integer.parseInt(totalTimeArray[1]);
+        int currentTotalHours = Integer.parseInt(totalTimeArray[0]);
+
+        int combinedSeconds = 1 + currentTotalSeconds;
+        int combinedMinutes = currentTotalMinutes;
+        int combinedHours = currentTotalHours;
+
+        // change int values when limits are reached
+        if (combinedSeconds > 60)
+        {
+            combinedMinutes++;
+            combinedSeconds -= 60;
+        }
+
+        if (combinedMinutes > 60)
+        {
+            combinedHours++;
+            combinedMinutes -= 60;
+        }
+
+        PrintWriter out = new PrintWriter("src/hoursspent.txt");
+        totalTimeString = String.format("%02d:%02d:%02d", combinedHours, combinedMinutes, combinedSeconds);
+        out.println(totalTimeString);
+
+        out.close();
     }
 }
