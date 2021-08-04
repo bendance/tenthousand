@@ -118,6 +118,23 @@ public class ScreenComponents extends JPanel
         totalSessionTime.setHorizontalAlignment(JLabel.CENTER);
         timePanel.add(totalSessionTime);
 
+        // add reset button for total time
+        JButton totalResetButton = new JButton("Reset Total");
+        totalResetButton.setSize(100, 20);
+        totalResetButton.setLocation(50,200);
+        totalResetButton.addActionListener(e ->
+        {
+            try
+            {
+                confirmTotalReset();
+            }
+            catch (FileNotFoundException fileNotFoundException)
+            {
+                fileNotFoundException.printStackTrace();
+            }
+        });
+        timePanel.add(totalResetButton);
+
         readNewTime();
 
         // set appropriate session label at beginning
@@ -253,5 +270,31 @@ public class ScreenComponents extends JPanel
         out.println(totalTimeString);
 
         out.close();
+    }
+
+    /**
+     * Asks user whether or not they would like to reset their total time
+     */
+    public void confirmTotalReset() throws FileNotFoundException
+    {
+        // Create an option pane
+        Object[] options = {"Yes", "No"};
+
+        int choice = JOptionPane.showOptionDialog(timePanel, "Are you sure you would like to reset your total" +
+                "hours spent?", "Confirm Total Hours Reset", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+                options, options[1]);
+
+        if (choice == 0)
+        {
+            // Reset the hoursspent.txt
+            PrintWriter out = new PrintWriter("src/hoursspent.txt");
+            out.println("00:00:00");
+            out.close();
+
+            totalTimeString = "00:00:00";
+            System.out.println(totalTimeString);
+            String defaultTime = "<html>00:00:00</html>";
+            currentSessionTime.setText(defaultTime);
+        }
     }
 }

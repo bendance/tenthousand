@@ -18,6 +18,7 @@ public class Screen
         // add the components to the screen
         ScreenComponents screenComponents = new ScreenComponents();
         frame.add(screenComponents);
+        frame.setResizable(false);
 
         frame.pack();
         frame.setVisible(true);
