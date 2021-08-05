@@ -17,6 +17,7 @@ public class ScreenComponents extends JPanel
     private Timer timer;
 
     private boolean timerStarted = false;
+    private boolean hasReachedTenThousand;
     private String totalTimeString;
 
     public ScreenComponents() throws FileNotFoundException
@@ -63,6 +64,7 @@ public class ScreenComponents extends JPanel
         JButton startButton = new JButton("Start");
         startButton.setSize(100, 20);
         startButton.setLocation(25,200);
+        startButton.setToolTipText("Starts the timer for this current session.");
         startButton.addActionListener(e ->
         {
             runTimer();
@@ -74,6 +76,7 @@ public class ScreenComponents extends JPanel
         JButton stopButton = new JButton("Stop");
         stopButton.setSize(100, 20);
         stopButton.setLocation(150,200);
+        stopButton.setToolTipText("Stops the timer for this current session.");
         stopButton.addActionListener(e ->
         {
             timer.stop();
@@ -84,11 +87,9 @@ public class ScreenComponents extends JPanel
         JButton resetButton = new JButton("Reset");
         resetButton.setSize(100, 20);
         resetButton.setLocation(275,200);
+        resetButton.setToolTipText("Resets the timer for this current session.");
         resetButton.addActionListener(e ->
-        {
-            String defaultTime = "<html>00:00:00</html>";
-            currentSessionTime.setText(defaultTime);
-        });
+                confirmSessionReset());
         inputPanel.add(resetButton);
     }
 
@@ -122,6 +123,7 @@ public class ScreenComponents extends JPanel
         JButton totalResetButton = new JButton("Reset Total");
         totalResetButton.setSize(100, 20);
         totalResetButton.setLocation(50,200);
+        totalResetButton.setToolTipText("Resets all time user has logged into this program.");
         totalResetButton.addActionListener(e ->
         {
             try
@@ -142,13 +144,69 @@ public class ScreenComponents extends JPanel
     }
 
     /**
+     * Resets the current session for the user
+     */
+    public void resetCurrentSession() throws FileNotFoundException
+    {
+        System.out.println(currentSessionTime.getText());
+        System.out.println(totalTimeString);
+
+        // breaks up current session time
+        String currentTime = currentSessionTime.getText();
+        currentTime = currentTime.substring(6, currentTime.length() - 7);
+        String[] timeArray = currentTime.split("[:]");
+        int currentSeconds = Integer.parseInt(timeArray[2]);
+        int currentMinutes = Integer.parseInt(timeArray[1]);
+        int currentHours = Integer.parseInt(timeArray[0]);
+
+        // current session seconds
+        int currentSessionSeconds = currentSeconds + (currentMinutes * 60) + (currentHours * 3600);
+        System.out.println("current seconds: " + currentSessionSeconds);
+
+        // breaks up the total time
+        String[] totalTimeArray = totalTimeString.split("[:]");
+        int currentTotalSeconds = Integer.parseInt(totalTimeArray[2]);
+        int currentTotalMinutes = Integer.parseInt(totalTimeArray[1]);
+        int currentTotalHours = Integer.parseInt(totalTimeArray[0]);
+
+        // total session seconds
+        int totalSessionSeconds = currentTotalSeconds + (currentTotalMinutes * 60) + (currentTotalHours * 3600);
+        System.out.println("total seconds: " + totalSessionSeconds);
+
+        // subtract the two values from each other
+        int secondsDifference = totalSessionSeconds - currentSessionSeconds;
+
+        // divide values of secondsDifference
+        int newTotalHours = secondsDifference / 3600;
+
+        secondsDifference = secondsDifference - (newTotalHours * 3600);
+
+        int newTotalMinutes = secondsDifference / 60;
+
+        secondsDifference = secondsDifference - (newTotalMinutes * 60);
+
+        int newTotalSeconds = secondsDifference;
+
+        // Write that new value to hoursspent.txt
+        PrintWriter out = new PrintWriter("src/hoursspent.txt");
+        totalTimeString = String.format("%02d:%02d:%02d", newTotalHours, newTotalMinutes, newTotalSeconds);
+        out.println(totalTimeString);
+        System.out.println(totalTimeString);
+
+        out.close();
+
+        String defaultTime = "<html>00:00:00</html>";
+        currentSessionTime.setText(defaultTime);
+    }
+
+    /**
      * Runs the timer for user
      */
     public void runTimer()
     {
         if (!timerStarted)
         {
-            timer = new Timer(1, e ->
+            timer = new Timer(1000, e ->
             {
                 changeCurrentSessionLabel();
                 try
@@ -211,6 +269,14 @@ public class ScreenComponents extends JPanel
 
         // Integer value of what is currently displayed in total hours label
         totalSessionTime.setText(String.format("<html>%d hours</html>", currentTotalHours));
+
+        // If the total session label reaches 10000
+        if (currentTotalHours == 10000 && !hasReachedTenThousand)
+        {
+            JOptionPane.showMessageDialog(null, "You've worked for 10000 hours!",
+                "Congratulations!!", JOptionPane.INFORMATION_MESSAGE);
+            hasReachedTenThousand = true;
+        }
     }
 
     /**
@@ -280,8 +346,8 @@ public class ScreenComponents extends JPanel
         // Create an option pane
         Object[] options = {"Yes", "No"};
 
-        int choice = JOptionPane.showOptionDialog(timePanel, "Are you sure you would like to reset your total" +
-                "hours spent?", "Confirm Total Hours Reset", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+        int choice = JOptionPane.showOptionDialog(timePanel, "Are you sure you want to reset the total" +
+                " hours logged into this program?", "Confirm Total Hours Reset", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
                 options, options[1]);
 
         if (choice == 0)
@@ -296,6 +362,30 @@ public class ScreenComponents extends JPanel
             String defaultTime = "<html>00:00:00</html>";
             currentSessionTime.setText(defaultTime);
             changeTotalSessionLabel();
+        }
+    }
+
+    /**
+     * Confirm whether or not the user would like to reset their current session
+     */
+    public void confirmSessionReset()
+    {
+        Object[] options = {"Yes", "No"};
+
+        int choice = JOptionPane.showOptionDialog(inputPanel, "Are you sure you want to reset the hours" +
+                " logged for this session?", "Confirm Current Session Hours Reset", JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+
+        if (choice == 0)
+        {
+            try
+            {
+                resetCurrentSession();
+            }
+            catch (FileNotFoundException fileNotFoundException)
+            {
+                fileNotFoundException.printStackTrace();
+            }
         }
     }
 }
