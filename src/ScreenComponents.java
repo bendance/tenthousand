@@ -217,7 +217,7 @@ public class ScreenComponents extends JPanel
     {
         if (!timerStarted)
         {
-            timer = new Timer(1, e ->
+            timer = new Timer(1000, e ->
             {
                 changeCurrentSessionLabel();
                 try
