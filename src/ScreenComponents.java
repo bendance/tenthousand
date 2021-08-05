@@ -27,6 +27,7 @@ public class ScreenComponents extends JPanel
 
     /**
      * Adds panels and separator to the JFrame
+     * @throws FileNotFoundException if the hoursspent.txt is not found
      */
     public ScreenComponents() throws FileNotFoundException
     {
@@ -106,6 +107,7 @@ public class ScreenComponents extends JPanel
 
     /**
      * Generates the components for the second half of the screen
+     * @throws FileNotFoundException if hoursspent.txt is not found
      */
     private void secondScreenComponents() throws FileNotFoundException
     {
@@ -292,6 +294,7 @@ public class ScreenComponents extends JPanel
 
     /**
      * Read the total number of hours the user has spent
+     * @throws FileNotFoundException if hoursspent.txt is not found
      */
     public void readNewTime() throws FileNotFoundException
     {
