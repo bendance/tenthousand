@@ -5,9 +5,7 @@
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.Scanner;
 
 /**
@@ -25,9 +23,10 @@ public class ScreenComponents extends JPanel
     private boolean hasReachedTenThousand;
     private String totalTimeString;
 
+    private String dataString;
+
     /**
      * Adds panels and separator to the JFrame
-     * @throws FileNotFoundException if hoursspent.txt is not found
      */
     public ScreenComponents() throws FileNotFoundException
     {
@@ -107,7 +106,6 @@ public class ScreenComponents extends JPanel
 
     /**
      * Generates the components for the second half of the screen
-     * @throws FileNotFoundException if hoursspent.txt is not found
      */
     private void secondScreenComponents() throws FileNotFoundException
     {
@@ -201,7 +199,7 @@ public class ScreenComponents extends JPanel
         int newTotalSeconds = secondsDifference;
 
         // Write that new value to hoursspent.txt
-        PrintWriter out = new PrintWriter("src/hoursspent.txt");
+        PrintWriter out = new PrintWriter(dataString);
         totalTimeString = String.format("%02d:%02d:%02d", newTotalHours, newTotalMinutes, newTotalSeconds);
         out.println(totalTimeString);
         System.out.println(totalTimeString);
@@ -219,7 +217,7 @@ public class ScreenComponents extends JPanel
     {
         if (!timerStarted)
         {
-            timer = new Timer(1000, e ->
+            timer = new Timer(1, e ->
             {
                 changeCurrentSessionLabel();
                 try
@@ -294,11 +292,17 @@ public class ScreenComponents extends JPanel
 
     /**
      * Read the total number of hours the user has spent
-     * @throws FileNotFoundException if hoursspent.txt is not found
      */
     public void readNewTime() throws FileNotFoundException
     {
-        Scanner in = new Scanner(new File("src/hoursspent.txt"));
+        File jarPath = new File(Screen.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+        String propertiesPath = jarPath.getParentFile().getAbsolutePath();
+        System.out.println(" propertiesPath-" + propertiesPath);
+
+        // sets input and output for entire program
+        dataString = propertiesPath+"/data/hoursspent.txt";
+
+        Scanner in = new Scanner(new File(dataString));
 
         // flag stating whether or not database has newline
         boolean hasTime = false;
@@ -329,25 +333,26 @@ public class ScreenComponents extends JPanel
         int currentTotalMinutes = Integer.parseInt(totalTimeArray[1]);
         int currentTotalHours = Integer.parseInt(totalTimeArray[0]);
 
-        int combinedSeconds = 1 + currentTotalSeconds;
-        int combinedMinutes = currentTotalMinutes;
-        int combinedHours = currentTotalHours;
+        currentTotalSeconds++;
 
         // change int values when limits are reached
-        if (combinedSeconds > 60)
+        // Reset seconds when seconds equals 60
+        if (currentTotalSeconds == 60)
         {
-            combinedMinutes++;
-            combinedSeconds -= 60;
+            currentTotalSeconds = 0;
+            currentTotalMinutes++;
         }
 
-        if (combinedMinutes > 60)
+        // Reset minutes when minutes equals 60
+        if (currentTotalMinutes == 60)
         {
-            combinedHours++;
-            combinedMinutes -= 60;
+            currentTotalMinutes = 0;
+            currentTotalHours++;
         }
 
-        PrintWriter out = new PrintWriter("src/hoursspent.txt");
-        totalTimeString = String.format("%02d:%02d:%02d", combinedHours, combinedMinutes, combinedSeconds);
+        PrintWriter out = new PrintWriter(dataString);
+        totalTimeString = String.format("%02d:%02d:%02d", currentTotalHours, currentTotalMinutes, currentTotalSeconds);
+        System.out.println(totalTimeString);
         out.println(totalTimeString);
 
         out.close();
@@ -369,7 +374,7 @@ public class ScreenComponents extends JPanel
         if (choice == 0)
         {
             // Reset the hoursspent.txt
-            PrintWriter out = new PrintWriter("src/hoursspent.txt");
+            PrintWriter out = new PrintWriter(dataString);
             out.println("00:00:00");
             out.close();
 
