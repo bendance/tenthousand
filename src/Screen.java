@@ -1,3 +1,8 @@
+// Name: Benjamin Dance
+// Date Created: 8/5/2021
+// Contents: JFrame which calls upon ScreenComponents for components to be added
+//////////////////////////////////////////////////////////////////////////////
+
 import javax.swing.*;
 import java.io.FileNotFoundException;
 
@@ -8,6 +13,7 @@ public class Screen
 {
     /**
      * Displays a JFrame on the user's screen
+     * @throws FileNotFoundException if hoursspent.txt is not found
      */
     public static void JFrame() throws FileNotFoundException
     {

@@ -1,3 +1,8 @@
+// Name: Benjamin Dance
+// Date Created: 8/5/2021
+// Contents: Screen components and logic for 10000 hours program
+//////////////////////////////////////////////////////////////////////////////
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
@@ -6,7 +11,7 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 /**
- * Panels for JFrame
+ * Panels, components, and logic for JFrame
  */
 public class ScreenComponents extends JPanel
 {
@@ -20,6 +25,10 @@ public class ScreenComponents extends JPanel
     private boolean hasReachedTenThousand;
     private String totalTimeString;
 
+    /**
+     * Adds panels and separator to the JFrame
+     * @throws FileNotFoundException if hoursspent.txt is not found
+     */
     public ScreenComponents() throws FileNotFoundException
     {
         setLayout(new BorderLayout());
@@ -37,6 +46,9 @@ public class ScreenComponents extends JPanel
         add(timePanel, BorderLayout.LINE_END);
     }
 
+    /**
+     * The components for first half of the panel
+     */
     private void firstScreenComponents()
     {
         // The first half of the screen
@@ -145,6 +157,7 @@ public class ScreenComponents extends JPanel
 
     /**
      * Resets the current session for the user
+     * @throws FileNotFoundException if hoursspent.txt is not found
      */
     public void resetCurrentSession() throws FileNotFoundException
     {
@@ -281,6 +294,7 @@ public class ScreenComponents extends JPanel
 
     /**
      * Read the total number of hours the user has spent
+     * @throws FileNotFoundException if hoursspent.txt is not found
      */
     public void readNewTime() throws FileNotFoundException
     {
@@ -305,6 +319,7 @@ public class ScreenComponents extends JPanel
 
     /**
      * Add the past time up to write the new time
+     * @throws FileNotFoundException if hoursspent.txt is not found
      */
     public void writeNewTime() throws FileNotFoundException
     {
@@ -340,6 +355,7 @@ public class ScreenComponents extends JPanel
 
     /**
      * Asks user whether or not they would like to reset their total time
+     * @throws FileNotFoundException if hoursspent.txt is not found
      */
     public void confirmTotalReset() throws FileNotFoundException
     {
