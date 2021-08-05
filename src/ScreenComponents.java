@@ -148,7 +148,7 @@ public class ScreenComponents extends JPanel
     {
         if (!timerStarted)
         {
-            timer = new Timer(1000, e ->
+            timer = new Timer(1, e ->
             {
                 changeCurrentSessionLabel();
                 try
@@ -295,6 +295,7 @@ public class ScreenComponents extends JPanel
             System.out.println(totalTimeString);
             String defaultTime = "<html>00:00:00</html>";
             currentSessionTime.setText(defaultTime);
+            changeTotalSessionLabel();
         }
     }
 }
